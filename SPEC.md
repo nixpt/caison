@@ -87,6 +87,10 @@ are sugar for nesting — `[a]` + `x: 1` ⇔ `a: { x: 1 }`.
 `@caison { version: "1.0" }` (or `@caison("1.0")`) sets the document's version.
 Absent, the version is `1.0`.
 
+`@cson` is the pre-rename spelling of this directive. Parsers MUST read it exactly
+like `@caison` (so documents written before the rename keep their meaning);
+printers MUST write `@caison`. The alias is deprecated.
+
 ---
 
 ## 3. Node model

@@ -298,9 +298,9 @@ export function parse(text) {
 
     if (ch === "@") {
       const ann = parseAnnotation(c);
-      if (ann.name === "caison") {
+      if (ann.name === "caison" || ann.name === "cson") {
         // reserved for document metadata (§2.5): sets the version and does NOT
-        // attach to the next node
+        // attach to the next node. `@cson` is the pre-rename alias.
         version = ann.properties.version || ann.args || version;
       } else {
         pending.push(ann); // attaches to the NEXT node (§4.3)

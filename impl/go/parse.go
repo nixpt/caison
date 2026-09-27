@@ -245,9 +245,9 @@ func Parse(text string) (*Document, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ann.Name == "caison" {
+			if ann.Name == "caison" || ann.Name == "cson" {
 				// reserved for document metadata (§2.5): sets the version and
-				// does NOT attach to the next node
+				// does NOT attach to the next node. `@cson` is the pre-rename alias.
 				if v, ok := ann.Properties["version"]; ok && v != "" {
 					version = v
 				} else if ann.Args != nil && *ann.Args != "" {

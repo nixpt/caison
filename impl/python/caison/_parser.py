@@ -329,7 +329,7 @@ def parse(text: str) -> Document:
 
         if ch == "@":
             ann = _parse_annotation(c)
-            if ann.name == "caison":               # reserved for doc metadata (§2.5)
+            if ann.name in ("caison", "cson"):     # reserved for doc metadata (§2.5); cson = pre-rename alias
                 version = ann.properties.get("version") or ann.args or version
             else:
                 pending.append(ann)              # attaches to the NEXT node (§4.3)

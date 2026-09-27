@@ -90,7 +90,9 @@ impl<'a> CaisonParser<'a> {
             // 1. Annotations
             if rest.starts_with('@') {
                 let ann = self.parse_annotation()?;
-                if ann.name == "caison" {
+                // `@cson` is the pre-rename spelling, still read so existing
+                // `.cson` documents keep their meaning (SPEC §2.5).
+                if ann.name == "caison" || ann.name == "cson" {
                     if let Some(v) = ann.properties.get("version") {
                         document_version = v.clone();
                     } else if let Some(ref arg) = ann.args {
