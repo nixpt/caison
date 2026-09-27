@@ -4,7 +4,24 @@ version = "0.1.0"
 edition = "2021"
 description = "CAISON — Crush AI-native Semantic Object Notation: an AI-native config/serialization format (confidence, semantic keys, annotations, synthesized values)"
 repository = "https://github.com/nixpt/caison"
+homepage = "https://github.com/nixpt/caison"
 license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["caison", "config", "serialization", "parser", "ai"]
+categories = ["parser-implementations", "config", "encoding"]
+# The Rust reference parser only: the Python/JS/Go implementations under impl/
+# ship through their own registries. conformance/ is included so the packaged
+# crate's tests still find their vectors.
+include = [
+    "/src/**",
+    "/tests/**",
+    "/examples/**",
+    "/conformance/**",
+    "/SPEC.md",
+    "/README.md",
+    "/LICENSE-MIT",
+    "/LICENSE-APACHE",
+]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
