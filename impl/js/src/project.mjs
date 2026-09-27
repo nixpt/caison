@@ -13,7 +13,7 @@
  * This keeps absent confidence distinguishable from an explicit ~1.0 (§4.2): the
  * `$confidence` member is present only when stated.
  */
-import { CsonError, Node, Synthesize } from "./model.mjs";
+import { CaisonError, Node, Synthesize } from "./model.mjs";
 
 const RESERVED_PREFIX = "$";
 
@@ -54,7 +54,7 @@ function projectObject(map) {
     // §6 reserves $-prefixed keys so a document key can never collide with the
     // wrapper members.
     if (key.startsWith(RESERVED_PREFIX)) {
-      throw new CsonError(`Key ${JSON.stringify(key)} uses the reserved '$' prefix`, 0, 0);
+      throw new CaisonError(`Key ${JSON.stringify(key)} uses the reserved '$' prefix`, 0, 0);
     }
     out[key] = node instanceof Node ? projectNode(node) : projectValue(node);
   }

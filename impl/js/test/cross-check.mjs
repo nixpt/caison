@@ -34,18 +34,18 @@ const pyAvailable = have("python3", ["-c", "import sys"]);
 const goAvailable = have("go", ["version"]);
 
 // Skipping a missing toolchain is right locally and WRONG in CI: a failed Go
-// install would make this pass while comparing nothing. CSON_CROSSCHECK_REQUIRE
+// install would make this pass while comparing nothing. CAISON_CROSSCHECK_REQUIRE
 // names the implementations that must be present, so CI fails loudly instead of
 // quietly narrowing its own coverage.
 const AVAILABLE = { python: pyAvailable, go: goAvailable };
-const required = (process.env.CSON_CROSSCHECK_REQUIRE || "")
+const required = (process.env.CAISON_CROSSCHECK_REQUIRE || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 
 // An unknown name must be an error, not a silent no-op: `REQUIRE=rust` quietly
 // requiring nothing is the same blind spot one level up.
 const unknown = required.filter((r) => !(r in AVAILABLE));
 if (unknown.length) {
-  console.error(`unknown implementation(s) in CSON_CROSSCHECK_REQUIRE: ${unknown.join(", ")}`);
+  console.error(`unknown implementation(s) in CAISON_CROSSCHECK_REQUIRE: ${unknown.join(", ")}`);
   console.error(`known: ${Object.keys(AVAILABLE).join(", ")} (rust is the corpus baseline, always compared)`);
   process.exit(2);
 }
@@ -67,17 +67,17 @@ function rustPrint(file) {
     { cwd: ROOT, encoding: "utf8" });
 }
 
-for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".cson")).sort()) {
+for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".caison")).sort()) {
   const text = readFileSync(join(CORPUS, "valid", f), "utf8");
-  const stem = f.slice(0, -".cson".length);
+  const stem = f.slice(0, -".caison".length);
   const expected = JSON.parse(readFileSync(join(CORPUS, "valid", `${stem}.expected.json`), "utf8"));
   const js = loads(text);
 
   const shapes = { corpus: canon(expected), javascript: canon(js) };
   if (pyAvailable) {
     const out = execFileSync("python3", ["-c",
-      "import sys,json;sys.path.insert(0,'impl/python');import cson;" +
-      "print(json.dumps(cson.loads(open(sys.argv[1]).read())))",
+      "import sys,json;sys.path.insert(0,'impl/python');import caison;" +
+      "print(json.dumps(caison.loads(open(sys.argv[1]).read())))",
       join(CORPUS, "valid", f)], { cwd: ROOT, encoding: "utf8" });
     shapes.python = canon(JSON.parse(out));
   }
@@ -107,13 +107,13 @@ for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".cs
   const rt = { "original(js)": canon(js), "printed(js)": canon(loads(printed)) };
   if (pyAvailable) {
     const out = execFileSync("python3", ["-c",
-      "import sys,json;sys.path.insert(0,'impl/python');import cson;" +
-      "print(json.dumps(cson.loads(sys.stdin.read())))"],
+      "import sys,json;sys.path.insert(0,'impl/python');import caison;" +
+      "print(json.dumps(caison.loads(sys.stdin.read())))"],
       { cwd: ROOT, encoding: "utf8", input: printed });
     rt["printed(py)"] = canon(JSON.parse(out));
   }
   if (goAvailable) {
-    const tmp = join(ROOT, ".printed.tmp.cson");
+    const tmp = join(ROOT, ".printed.tmp.caison");
     writeFileSync(tmp, printed);
     try {
       const out = execFileSync("go", ["run", "./cmd/project", tmp],

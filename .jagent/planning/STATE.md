@@ -1,4 +1,4 @@
-# Planning state — cson
+# Planning state — caison
 
 **Updated:** 2026-09-20
 **Milestone focus:** M1 — multi-language parsers on a settled spec
@@ -33,7 +33,7 @@ confidence to `1.0` passed *every* vector), `array_metadata`, `nested_metadata`.
 ## What settling §6 immediately caught
 
 Two real bugs in the Rust reference, both invisible while the old projection discarded
-the evidence: `@cson` attaching itself to the following node instead of setting the
+the evidence: `@caison` attaching itself to the following node instead of setting the
 document version (§2.5), and array elements dropping trailing annotations. Recorded as
 traps in `.dejavue/`.
 

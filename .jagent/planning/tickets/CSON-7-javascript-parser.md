@@ -12,7 +12,7 @@
 
 ## Problem
 
-CSON is positioned as "JSON for agents", and JSON's reach comes from having a parser
+CAISON is positioned as "JSON for agents", and JSON's reach comes from having a parser
 everywhere. Today there are two implementations (Rust, Python) and neither runs in a
 browser, an editor extension, or a Node tool.
 
@@ -30,7 +30,7 @@ browser, an editor extension, or a Node tool.
   and annotations, then project per SPEC §6. Do not project during parsing.
 - Hand-written recursive descent over a cursor; no parser-generator dependency.
 - Port the two test suites: the corpus runner and the spec-behaviour checks.
-- Validate against a real (large) CSON document as well as the corpus — the 13 vectors
+- Validate against a real (large) CAISON document as well as the corpus — the 13 vectors
   do not exercise content-addressed keys, stacked annotations or long escaped strings.
 
 ## Files to modify
@@ -50,5 +50,5 @@ browser, an editor extension, or a Node tool.
   every vector until `confidence_absent_vs_one` was added.
 - **An array element is a node** (§5) and may carry confidence and annotations. The Rust
   parser got this wrong.
-- **`@cson` is document metadata** (§2.5), not an annotation on the following node. The
+- **`@caison` is document metadata** (§2.5), not an annotation on the following node. The
   Rust parser got this wrong too.

@@ -1,4 +1,4 @@
-# CSON-9 — CSON printer
+# CSON-9 — CAISON printer
 
 | Field | Value |
 |-------|-------|
@@ -13,12 +13,12 @@
 ## Problem
 
 Every implementation parses only. SPEC §6 states a document "can be reconstructed from
-its projection plus the CSON printer" — a claim nothing currently verifies, because the
+its projection plus the CAISON printer" — a claim nothing currently verifies, because the
 printer does not exist. CSON-6 (round-trip corpus) is blocked on this.
 
 ## Success criteria
 
-- [ ] `print(document) -> String` emitting valid CSON for every corpus vector
+- [ ] `print(document) -> String` emitting valid CAISON for every corpus vector
 - [ ] `parse(print(doc)) == doc` at the node level (value, confidence, annotations,
       semantic-key flag) for all vectors
 - [ ] Confidence is emitted only when stated — an absent confidence must not become

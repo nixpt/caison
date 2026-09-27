@@ -1,7 +1,7 @@
-# TASKS — cson
+# TASKS — caison
 
 Every open item below represents a planned task or issue. See
-`.jagent/planning/tickets/` for full detail on each `CSON-N` ID.
+`.jagent/planning/tickets/` for full detail on each `CAISON-N` ID.
 
 ---
 
@@ -16,12 +16,12 @@ Every open item below represents a planned task or issue. See
   by claiming reconstructability while the corpus enforced a lossy shape. The rule is
   now a wrapper object. Reasoning + rejected alternatives: `.dejavue/decisions.md`.
   Also moved the projection out of `tests/conformance.rs` into `src/project.rs`.
-- [ ] **CSON-3** — publish `cson` to crates.io; then make `crush-cson` a thin
-  wrapper (`cson` + `CsonParseCap`). Needs a crush-ast PR.
+- [ ] **CSON-3** — publish `caison` to crates.io; then make `crush-cson` a thin
+  wrapper (`caison` + `CaisonParseCap`). Needs a crush-ast PR.
   **Note:** `crush-ast/crates/crush-cson` is crush's own parser for crush, not a stale
   fork to reconcile — revisit whether the thin-wrapper framing still holds.
 - [ ] **CSON-4** — re-point crush-ast's 5 dependents (`crush-cast`, `crush-index`,
-  `crush-lang-custom`, `crush-lang-sdk`, `crush-python`) to the `cson` dep.
+  `crush-lang-custom`, `crush-lang-sdk`, `crush-python`) to the `caison` dep.
 
 ## P2 — conformance + reach
 
@@ -48,22 +48,22 @@ Every open item below represents a planned task or issue. See
 - [x] **CSON-8** — Go parser: `impl/go/`, stdlib only. 16/16 conformance + 14 spec
   tests (30 subtests). `Confidence *float64` so absent stays distinguishable from
   `~1.0`; `*Object` preserves key order for a future printer.
-- [x] **CSON-9** — CSON printer in the Rust reference (`src/print.rs`), making §6's
+- [x] **CSON-9** — CAISON printer in the Rust reference (`src/print.rs`), making §6's
   reconstructability claim checkable. Round-trip is at the NODE level: comments,
   `[section]` sugar, key order and bare-vs-quoted choice are deliberately not
   preserved; values, confidence, annotations, semantic keys and version are.
   Printers for the other implementations remain open (see CSON-11).
 - [x] **CSON-10** — `.github/workflows/conformance.yml`: a job per implementation
   plus a `cross-check` job asserting all four project identically.
-  `CSON_CROSSCHECK_REQUIRE` makes a missing toolchain a hard failure instead of a
+  `CAISON_CROSSCHECK_REQUIRE` makes a missing toolchain a hard failure instead of a
   silently narrower comparison.
 
 - [ ] **CSON-11** — printers for Python, JavaScript and Go. Rust has one; the others
-  parse only. Needed before any of them can emit CSON rather than just consume it.
+  parse only. Needed before any of them can emit CAISON rather than just consume it.
 
 ## Non-goals
 
 Grammar changes without a version bump; anything CrusH-runtime (stays in crush-ast).
-Vendoring corpora built with CSON — the format is public, the data may not be.
+Vendoring corpora built with CAISON — the format is public, the data may not be.
 
 Map of prior work: `ROADMAP.md`. Durable reasoning: `.dejavue/`.

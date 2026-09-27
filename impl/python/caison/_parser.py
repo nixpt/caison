@@ -1,4 +1,4 @@
-"""CSON parser — a direct implementation of SPEC.md §2-§5.
+"""CAISON parser — a direct implementation of SPEC.md §2-§5.
 
 Hand-written recursive descent over a character cursor. No dependencies.
 """
@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from ._model import Annotation, CsonError, Document, Node, Synthesize
+from ._model import Annotation, CaisonError, Document, Node, Synthesize
 
 _BOOL = {"true": True, "false": False}
 
@@ -24,8 +24,8 @@ class _Cursor:
         nl = self.s.rfind("\n", 0, at)
         return line, at - nl
 
-    def err(self, msg: str, at: Optional[int] = None) -> CsonError:
-        return CsonError(msg, *self.pos(at))
+    def err(self, msg: str, at: Optional[int] = None) -> CaisonError:
+        return CaisonError(msg, *self.pos(at))
 
     def eof(self) -> bool:
         return self.i >= self.n
@@ -299,7 +299,7 @@ def _parse_key(c: _Cursor) -> tuple:
 
 
 def parse(text: str) -> Document:
-    """Parse a CSON document. Raises CsonError with position on failure."""
+    """Parse a CAISON document. Raises CaisonError with position on failure."""
     c = _Cursor(text)
     root: dict = {}
     version = "1.0"
@@ -329,7 +329,7 @@ def parse(text: str) -> Document:
 
         if ch == "@":
             ann = _parse_annotation(c)
-            if ann.name == "cson":               # reserved for doc metadata (§2.5)
+            if ann.name in ("caison", "cson"):     # reserved for doc metadata (§2.5); cson = pre-rename alias
                 version = ann.properties.get("version") or ann.args or version
             else:
                 pending.append(ann)              # attaches to the NEXT node (§4.3)

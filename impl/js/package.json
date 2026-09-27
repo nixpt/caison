@@ -1,7 +1,7 @@
 {
-  "name": "cson-parser",
+  "name": "caison",
   "version": "0.1.0",
-  "description": "CSON (Crush Semantic Object Notation) parser — JSON shape with confidence, semantic keys, annotations and synthesized values",
+  "description": "CAISON (Crush AI-native Semantic Object Notation) parser — JSON shape with confidence, semantic keys, annotations and synthesized values",
   "type": "module",
   "main": "./src/index.mjs",
   "types": "./src/index.d.ts",
@@ -10,9 +10,9 @@
   "scripts": {
     "test": "node test/conformance.mjs && node test/spec.mjs && node test/cross-check.mjs"
   },
-  "keywords": ["cson", "parser", "configuration", "serialization", "agents"],
+  "keywords": ["caison", "parser", "configuration", "serialization", "agents"],
   "license": "MIT OR Apache-2.0",
-  "repository": { "type": "git", "url": "https://github.com/nixpt/cson.git", "directory": "impl/js" },
+  "repository": { "type": "git", "url": "https://github.com/nixpt/caison.git", "directory": "impl/js" },
   "engines": { "node": ">=18" },
   "dependencies": {}
 }

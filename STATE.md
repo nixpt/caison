@@ -1,7 +1,7 @@
-# cson — State (2026-09-18)
+# caison — State (2026-09-18)
 
-**Role:** The **language-agnostic home of CSON** — the Crush Semantic Object
-Notation format specification plus the Rust reference parser. CSON extends JSON
+**Role:** The **language-agnostic home of CAISON** — the Crush Semantic Object
+Notation format specification plus the Rust reference parser. CAISON extends JSON
 with four AI-native primitives (semantic keys, confidence weights, annotations,
 synthesized values). NOT owned by any language toolchain: `crush-ast` (and any
 future consumer) depends on this crate; other languages ship their own parsers
@@ -15,6 +15,6 @@ clippy --all-targets -- -D warnings`.
 
 **Origin:** scaffolded 2026-09-18 via `foreman-scaffold`; parser ported from
 `crush-ast/crates/crush-cson` (language-agnostic parts only — the CrusH `cson.parse`
-VM cap stays in crush-ast). Design: `workspace-meta/plans/2026-09-18-cson-standalone-project.md`.
+VM cap stays in crush-ast). Design: `workspace-meta/plans/2026-09-18-caison-standalone-project.md`.
 
-**Remote:** `nixpt/cson` (public).
+**Remote:** `nixpt/caison` (public).

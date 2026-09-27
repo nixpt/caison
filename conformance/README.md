@@ -1,4 +1,4 @@
-# CSON conformance corpus
+# CAISON conformance corpus
 
 Language-neutral test vectors. **An implementation is conforming iff it passes
 every vector here.** Run it from any language — the vectors are plain data, not
@@ -9,9 +9,9 @@ See [`../SPEC.md`](../SPEC.md) §8.
 ## Layout
 
 ```
-valid/<name>.cson        a document a conforming parser MUST accept
+valid/<name>.caison        a document a conforming parser MUST accept
 valid/<name>.expected.json   its required JSON projection (SPEC §6)
-invalid/<name>.cson      a document a conforming parser MUST reject
+invalid/<name>.caison      a document a conforming parser MUST reject
 invalid/<name>.error     a substring the error message MUST contain
 ```
 
@@ -22,8 +22,8 @@ cargo test --test conformance
 ```
 
 (`tests/conformance.rs` walks these files.) Other implementations should mirror
-that: read every `valid/*.cson`, assert the parse succeeds and projects to the
-matching `.expected.json`; read every `invalid/*.cson`, assert the parse fails
+that: read every `valid/*.caison`, assert the parse succeeds and projects to the
+matching `.expected.json`; read every `invalid/*.caison`, assert the parse fails
 with a message containing the `.error` substring.
 
 ## Adding a vector

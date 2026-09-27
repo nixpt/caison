@@ -1,4 +1,4 @@
-# a basic CSON document
+# a basic CAISON document
 name: "avalanche"
 port: 8080
 enabled: true

@@ -24,7 +24,7 @@ permissions:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    if: github.actor != 'cson-release'
+    if: github.actor != 'caison-release'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,7 +35,7 @@ jobs:
       - name: bump + tag + push
         env:
           BUMPVER_MAIN_BRANCH: main
-          BUMPVER_GIT_USER: cson-release
-          BUMPVER_GIT_EMAIL: release@cson.local
+          BUMPVER_GIT_USER: caison-release
+          BUMPVER_GIT_EMAIL: release@caison.local
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # so `gh release create` inside the script authenticates
         run: ./scripts/bump-version.sh

@@ -1,6 +1,6 @@
-# ROADMAP — cson
+# ROADMAP — caison
 
-North star: **CSON is a format anyone can adopt** — a spec with a conformance
+North star: **CAISON is a format anyone can adopt** — a spec with a conformance
 corpus and a reference parser per language, the way JSON works. This repo is the
 spec's home plus the Rust reference implementation.
 
@@ -33,15 +33,15 @@ spec's home plus the Rust reference implementation.
 
 ## Later
 
-- [ ] CSON-9 — a CSON printer; §6 claims a document is reconstructable from its
+- [ ] CSON-9 — a CAISON printer; §6 claims a document is reconstructable from its
   projection plus the printer, and nothing verifies that because there is no printer
 - [ ] CSON-6 — print → parse round-trip corpus (blocked on CSON-9)
-- [ ] CSON-3 — publish `cson` to crates.io; revisit `crush-cson`'s fate. Note it is
+- [ ] CSON-3 — publish `caison` to crates.io; revisit `crush-cson`'s fate. Note it is
   **crush's own parser for crush**, not a stale fork to reconcile — the thin-wrapper
   framing may no longer be the right one
-- [ ] CSON-4 — wire `crush-ast`'s 5 dependents to the `cson` dep
+- [ ] CSON-4 — wire `crush-ast`'s 5 dependents to the `caison` dep
 
 ## Non-goals
 
-- Not the Crush runtime: the `cson.parse` VM host capability lives in `crush-ast`.
+- Not the Crush runtime: the `caison.parse` VM host capability lives in `crush-ast`.
 - No grammar changes without a spec-version bump (SPEC §9).

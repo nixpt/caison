@@ -1,4 +1,4 @@
-package cson
+package caison
 
 import (
 	"strings"
@@ -68,16 +68,16 @@ func TestAnnotations(t *testing.T) {
 	if len(k.Annotations) != 1 || k.Annotations[0].Name != "pending" {
 		t.Errorf("pending annotation should attach to the next node: %+v", k.Annotations)
 	}
-	// @cson is document metadata (§2.5), NOT an annotation on the next node
-	d = mustParse(t, `@cson { version: "1.1" }`+"\nk: 1")
+	// @caison is document metadata (§2.5), NOT an annotation on the next node
+	d = mustParse(t, `@caison { version: "1.1" }`+"\nk: 1")
 	k, _ = d.Root.Get("k")
 	if len(k.Annotations) != 0 {
-		t.Errorf("@cson must not attach to the next node: %+v", k.Annotations)
+		t.Errorf("@caison must not attach to the next node: %+v", k.Annotations)
 	}
 	if d.Version != "1.1" {
 		t.Errorf("version should be 1.1, got %q", d.Version)
 	}
-	if got := mustParse(t, `@cson("2.0")`+"\nk: 1").Version; got != "2.0" {
+	if got := mustParse(t, `@caison("2.0")`+"\nk: 1").Version; got != "2.0" {
 		t.Errorf("args form version should be 2.0, got %q", got)
 	}
 }

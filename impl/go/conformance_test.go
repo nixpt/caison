@@ -1,4 +1,4 @@
-package cson
+package caison
 
 import (
 	"encoding/json"
@@ -57,10 +57,10 @@ func TestValidVectors(t *testing.T) {
 	}
 	n := 0
 	for _, e := range entries {
-		if !strings.HasSuffix(e.Name(), ".cson") {
+		if !strings.HasSuffix(e.Name(), ".caison") {
 			continue
 		}
-		stem := strings.TrimSuffix(e.Name(), ".cson")
+		stem := strings.TrimSuffix(e.Name(), ".caison")
 		t.Run(stem, func(t *testing.T) {
 			src, err := os.ReadFile(filepath.Join(dir, e.Name()))
 			if err != nil {
@@ -96,10 +96,10 @@ func TestInvalidVectors(t *testing.T) {
 		t.Fatalf("read %s: %v", dir, err)
 	}
 	for _, e := range entries {
-		if !strings.HasSuffix(e.Name(), ".cson") {
+		if !strings.HasSuffix(e.Name(), ".caison") {
 			continue
 		}
-		stem := strings.TrimSuffix(e.Name(), ".cson")
+		stem := strings.TrimSuffix(e.Name(), ".caison")
 		t.Run(stem, func(t *testing.T) {
 			src, err := os.ReadFile(filepath.Join(dir, e.Name()))
 			if err != nil {
@@ -115,7 +115,7 @@ func TestInvalidVectors(t *testing.T) {
 				t.Fatalf("parsed but MUST be rejected (error should contain %q)", want)
 			}
 			if _, ok := err.(*Error); !ok {
-				t.Fatalf("returned %T, not *cson.Error: %v", err, err)
+				t.Fatalf("returned %T, not *caison.Error: %v", err, err)
 			}
 			if !strings.Contains(strings.ToLower(err.Error()), strings.ToLower(want)) {
 				t.Errorf("error %q lacks %q", err.Error(), want)

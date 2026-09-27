@@ -12,12 +12,12 @@
 //! values and array elements — an array element is a node (§5) and may carry
 //! metadata like any other.
 //!
-//! This is distinct from [`CsonDocument::to_json`], which is a serde
+//! This is distinct from [`CaisonDocument::to_json`], which is a serde
 //! serialization of the node model (round-trippable, but not the §6 shape).
 
 use serde_json::{Map, Value};
 
-use crate::{CsonDocument, CsonNode, CsonValue};
+use crate::{CaisonDocument, CaisonNode, CaisonValue};
 
 /// Error returned when a document cannot be projected.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -39,14 +39,14 @@ impl std::fmt::Display for ProjectError {
 
 impl std::error::Error for ProjectError {}
 
-impl CsonDocument {
+impl CaisonDocument {
     /// Project this document to JSON per SPEC §6.
     pub fn project(&self) -> Result<Value, ProjectError> {
         project_node(&self.root)
     }
 }
 
-fn annotations_of(node: &CsonNode) -> Value {
+fn annotations_of(node: &CaisonNode) -> Value {
     Value::Array(
         node.annotations
             .iter()
@@ -69,7 +69,7 @@ fn annotations_of(node: &CsonNode) -> Value {
 }
 
 /// Bare value when the node carries no metadata, wrapper object otherwise.
-fn wrap(node: &CsonNode, projected: Value) -> Value {
+fn wrap(node: &CaisonNode, projected: Value) -> Value {
     if node.confidence.is_none() && node.annotations.is_empty() {
         return projected;
     }
@@ -86,28 +86,28 @@ fn wrap(node: &CsonNode, projected: Value) -> Value {
     Value::Object(m)
 }
 
-pub(crate) fn project_node(node: &CsonNode) -> Result<Value, ProjectError> {
+pub(crate) fn project_node(node: &CaisonNode) -> Result<Value, ProjectError> {
     let value = match &node.value {
-        CsonValue::String(s) => Value::String(s.clone()),
-        CsonValue::Number(n) => serde_json::Number::from_f64(*n)
+        CaisonValue::String(s) => Value::String(s.clone()),
+        CaisonValue::Number(n) => serde_json::Number::from_f64(*n)
             .map(Value::Number)
             .unwrap_or(Value::Null),
-        CsonValue::Boolean(b) => Value::Bool(*b),
-        CsonValue::Null => Value::Null,
-        CsonValue::Synthesize(s) => {
+        CaisonValue::Boolean(b) => Value::Bool(*b),
+        CaisonValue::Null => Value::Null,
+        CaisonValue::Synthesize(s) => {
             // an object, never a bare string, so it cannot be mistaken for data (§4.4)
             let mut m = Map::new();
             m.insert("$synthesize".into(), Value::String(s.clone()));
             Value::Object(m)
         }
-        CsonValue::Array(items) => {
+        CaisonValue::Array(items) => {
             let mut out = Vec::with_capacity(items.len());
             for item in items {
                 out.push(project_node(item)?);
             }
             Value::Array(out)
         }
-        CsonValue::Object(map) => {
+        CaisonValue::Object(map) => {
             let mut out = Map::new();
             for (k, v) in map {
                 // SPEC §6: a semantic key projects to its bare intent text — the

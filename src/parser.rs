@@ -1,18 +1,18 @@
-//! CSON text parser — hand-written recursive descent.
+//! CAISON text parser — hand-written recursive descent.
 //!
-//! Parses the Crush Semantic Object Notation text format into the
-//! canonical `CsonDocument` type from the parent module.
+//! Parses the Crush AI-native Semantic Object Notation text format into the
+//! canonical `CaisonDocument` type from the parent module.
 
-use super::{CsonAnnotation, CsonDocument, CsonKey, CsonNode, CsonValue};
+use super::{CaisonAnnotation, CaisonDocument, CaisonKey, CaisonNode, CaisonValue};
 use std::collections::HashMap;
 
-/// A basic MVP parser for CSON text format.
-pub struct CsonParser<'a> {
+/// A basic MVP parser for CAISON text format.
+pub struct CaisonParser<'a> {
     pub input: &'a str,
     pub pos: usize,
 }
 
-impl<'a> CsonParser<'a> {
+impl<'a> CaisonParser<'a> {
     pub fn new(input: &'a str) -> Self {
         Self { input, pos: 0 }
     }
@@ -73,7 +73,7 @@ impl<'a> CsonParser<'a> {
         Err(self.error("Unclosed string"))
     }
 
-    pub fn parse(&mut self) -> Result<CsonDocument, String> {
+    pub fn parse(&mut self) -> Result<CaisonDocument, String> {
         let mut root_obj = HashMap::new();
         let mut current_section = None;
         let mut pending_annotations = Vec::new();
@@ -90,13 +90,15 @@ impl<'a> CsonParser<'a> {
             // 1. Annotations
             if rest.starts_with('@') {
                 let ann = self.parse_annotation()?;
-                if ann.name == "cson" {
+                // `@cson` is the pre-rename spelling, still read so existing
+                // `.cson` documents keep their meaning (SPEC §2.5).
+                if ann.name == "caison" || ann.name == "cson" {
                     if let Some(v) = ann.properties.get("version") {
                         document_version = v.clone();
                     } else if let Some(ref arg) = ann.args {
                         document_version = arg.trim_matches('"').to_string();
                     }
-                    // `@cson` is reserved for document metadata (SPEC §2.5): it
+                    // `@caison` is reserved for document metadata (SPEC §2.5): it
                     // sets the version and does NOT attach to the next node.
                     continue;
                 }
@@ -122,13 +124,13 @@ impl<'a> CsonParser<'a> {
 
                 if let Some(ref sec) = current_section {
                     let sec_key = sec.clone();
-                    let section_node = root_obj.entry(sec_key).or_insert_with(|| CsonNode {
-                        value: CsonValue::Object(HashMap::new()),
+                    let section_node = root_obj.entry(sec_key).or_insert_with(|| CaisonNode {
+                        value: CaisonValue::Object(HashMap::new()),
                         confidence: None,
                         annotations: vec![],
                     });
 
-                    if let CsonValue::Object(ref mut map) = section_node.value {
+                    if let CaisonValue::Object(ref mut map) = section_node.value {
                         let k_str = key.to_string();
                         if map.contains_key(&k_str) {
                             return Err(self.error(&format!("Duplicate key: {}", k_str)));
@@ -147,17 +149,17 @@ impl<'a> CsonParser<'a> {
             }
         }
 
-        Ok(CsonDocument {
+        Ok(CaisonDocument {
             version: document_version,
-            root: CsonNode {
-                value: CsonValue::Object(root_obj),
+            root: CaisonNode {
+                value: CaisonValue::Object(root_obj),
                 confidence: None,
                 annotations: pending_annotations,
             },
         })
     }
 
-    fn parse_annotation(&mut self) -> Result<CsonAnnotation, String> {
+    fn parse_annotation(&mut self) -> Result<CaisonAnnotation, String> {
         self.pos += 1; // skip '@'
         let name_end = self.input[self.pos..]
             .find(|c: char| !c.is_alphanumeric() && c != '_')
@@ -218,14 +220,14 @@ impl<'a> CsonParser<'a> {
             }
         }
 
-        Ok(CsonAnnotation {
+        Ok(CaisonAnnotation {
             name,
             args,
             properties,
         })
     }
 
-    fn parse_kv_pair(&mut self) -> Result<Option<(CsonKey, CsonNode)>, String> {
+    fn parse_kv_pair(&mut self) -> Result<Option<(CaisonKey, CaisonNode)>, String> {
         self.skip_whitespace_and_comments();
         if self.pos >= self.input.len() {
             return Ok(None);
@@ -256,9 +258,9 @@ impl<'a> CsonParser<'a> {
         }
 
         let key = if is_semantic {
-            CsonKey::Semantic(key_str)
+            CaisonKey::Semantic(key_str)
         } else {
-            CsonKey::Exact(key_str)
+            CaisonKey::Exact(key_str)
         };
 
         self.skip_whitespace_and_comments();
@@ -302,7 +304,7 @@ impl<'a> CsonParser<'a> {
 
         Ok(Some((
             key,
-            CsonNode {
+            CaisonNode {
                 value,
                 confidence,
                 annotations,
@@ -313,12 +315,13 @@ impl<'a> CsonParser<'a> {
     /// Consume any annotations trailing a value, e.g. `"x" @note @wip { a: "b" }`.
     /// A node is `value confidence? annotation*` (SPEC §3), and that applies to
     /// array elements as much as to object values.
-    fn parse_trailing_annotations(&mut self) -> Result<Vec<CsonAnnotation>, String> {
+    fn parse_trailing_annotations(&mut self) -> Result<Vec<CaisonAnnotation>, String> {
         let mut out = Vec::new();
         loop {
             let save = self.pos;
             self.skip_whitespace_and_comments();
-            if self.pos < self.input.len() && self.input[self.pos..].starts_with('@')
+            if self.pos < self.input.len()
+                && self.input[self.pos..].starts_with('@')
                 && !self.input[self.pos..].starts_with("@synthesize")
             {
                 out.push(self.parse_annotation()?);
@@ -329,7 +332,7 @@ impl<'a> CsonParser<'a> {
         }
     }
 
-    fn parse_value(&mut self) -> Result<(CsonValue, Option<f64>), String> {
+    fn parse_value(&mut self) -> Result<(CaisonValue, Option<f64>), String> {
         self.skip_whitespace_and_comments();
         if self.pos >= self.input.len() {
             return Err(self.error("Unexpected end of input when parsing value"));
@@ -339,14 +342,14 @@ impl<'a> CsonParser<'a> {
         if self.input[self.pos..].starts_with('@') {
             let ann = self.parse_annotation()?;
             if ann.name == "synthesize" {
-                value = CsonValue::Synthesize(
+                value = CaisonValue::Synthesize(
                     ann.args.unwrap_or_default().trim_matches('"').to_string(),
                 );
             } else {
                 return Err(self.error("Only @synthesize is supported as a value annotation"));
             }
         } else if self.input[self.pos..].starts_with('"') {
-            value = CsonValue::String(self.parse_quoted_string()?);
+            value = CaisonValue::String(self.parse_quoted_string()?);
         } else if self.input[self.pos..].starts_with("true")
             && (self.pos + 4 == self.input.len()
                 || !self.input[self.pos + 4..self.pos + 5]
@@ -355,7 +358,7 @@ impl<'a> CsonParser<'a> {
                     .unwrap()
                     .is_alphanumeric())
         {
-            value = CsonValue::Boolean(true);
+            value = CaisonValue::Boolean(true);
             self.pos += 4;
         } else if self.input[self.pos..].starts_with("false")
             && (self.pos + 5 == self.input.len()
@@ -365,7 +368,7 @@ impl<'a> CsonParser<'a> {
                     .unwrap()
                     .is_alphanumeric())
         {
-            value = CsonValue::Boolean(false);
+            value = CaisonValue::Boolean(false);
             self.pos += 5;
         } else if self.input[self.pos..].starts_with("null")
             && (self.pos + 4 == self.input.len()
@@ -375,7 +378,7 @@ impl<'a> CsonParser<'a> {
                     .unwrap()
                     .is_alphanumeric())
         {
-            value = CsonValue::Null;
+            value = CaisonValue::Null;
             self.pos += 4;
         } else if self.input[self.pos..].starts_with('{') {
             self.pos += 1;
@@ -401,7 +404,7 @@ impl<'a> CsonParser<'a> {
                     self.pos += 1;
                 }
             }
-            value = CsonValue::Object(map);
+            value = CaisonValue::Object(map);
         } else if self.input[self.pos..].starts_with('[') {
             self.pos += 1;
             let mut arr = Vec::new();
@@ -416,7 +419,7 @@ impl<'a> CsonParser<'a> {
                 }
                 let (v, c) = self.parse_value()?;
                 let anns = self.parse_trailing_annotations()?;
-                arr.push(CsonNode {
+                arr.push(CaisonNode {
                     value: v,
                     confidence: c,
                     annotations: anns,
@@ -426,7 +429,7 @@ impl<'a> CsonParser<'a> {
                     self.pos += 1;
                 }
             }
-            value = CsonValue::Array(arr);
+            value = CaisonValue::Array(arr);
         } else {
             let mut end = 0;
             let rest = &self.input[self.pos..];
@@ -450,15 +453,15 @@ impl<'a> CsonParser<'a> {
             }
             let raw_str = self.input[self.pos..self.pos + end].trim();
             value = if let Ok(n) = raw_str.parse::<f64>() {
-                CsonValue::Number(n)
+                CaisonValue::Number(n)
             } else if raw_str == "true" {
-                CsonValue::Boolean(true)
+                CaisonValue::Boolean(true)
             } else if raw_str == "false" {
-                CsonValue::Boolean(false)
+                CaisonValue::Boolean(false)
             } else if raw_str == "null" {
-                CsonValue::Null
+                CaisonValue::Null
             } else {
-                CsonValue::String(raw_str.to_string())
+                CaisonValue::String(raw_str.to_string())
             };
             self.pos += end;
         }
@@ -520,15 +523,15 @@ mod tests {
                 handler: "default"
             }
         "#;
-        let mut parser = CsonParser::new(input);
+        let mut parser = CaisonParser::new(input);
         let doc = parser.parse().unwrap();
         assert_eq!(doc.version, "1.0");
 
-        if let CsonValue::Object(ref map) = doc.root.value {
+        if let CaisonValue::Object(ref map) = doc.root.value {
             assert!(map.contains_key("name"));
             assert!(map.contains_key("version"));
             assert!(map.contains_key("active"));
-            assert_eq!(map.get("port").unwrap().value, CsonValue::Number(8080.0));
+            assert_eq!(map.get("port").unwrap().value, CaisonValue::Number(8080.0));
         } else {
             panic!("Expected Object root");
         }
@@ -536,10 +539,10 @@ mod tests {
 
     #[test]
     fn test_version_parsing() {
-        let input = r#"@cson { version: "2.0" }
+        let input = r#"@caison { version: "2.0" }
             key: "value"
         "#;
-        let mut parser = CsonParser::new(input);
+        let mut parser = CaisonParser::new(input);
         let doc = parser.parse().unwrap();
         assert_eq!(doc.version, "2.0");
     }
@@ -547,12 +550,12 @@ mod tests {
     #[test]
     fn test_issue_escaped_string() {
         let input = r#"msg: "he said \"hi\"""#;
-        let mut parser = CsonParser::new(input);
+        let mut parser = CaisonParser::new(input);
         let doc = parser.parse().unwrap();
-        if let CsonValue::Object(map) = doc.root.value {
+        if let CaisonValue::Object(map) = doc.root.value {
             assert_eq!(
                 map.get("msg").unwrap().value,
-                CsonValue::String("he said \"hi\"".to_string())
+                CaisonValue::String("he said \"hi\"".to_string())
             );
         } else {
             panic!();
@@ -563,9 +566,9 @@ mod tests {
     fn test_issue_annotation_comma() {
         let input = r#"@module { purpose: "parse a, b, c" }
         key: 1"#;
-        let mut parser = CsonParser::new(input);
+        let mut parser = CaisonParser::new(input);
         let doc = parser.parse().unwrap();
-        if let CsonValue::Object(map) = doc.root.value {
+        if let CaisonValue::Object(map) = doc.root.value {
             assert_eq!(
                 map.get("key").unwrap().annotations[0]
                     .properties

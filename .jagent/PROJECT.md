@@ -1,15 +1,15 @@
-# cson
+# caison
 
-CSON — **Crush Semantic Object Notation**: a JSON-shaped configuration and
+CAISON — **Crush AI-native Semantic Object Notation**: a JSON-shaped configuration and
 serialization format with four primitives JSON lacks — semantic keys
 (`~"intent": v`), confidence (`v ~0.95`), annotations (`@name(args) { k: "v" }`)
 and synthesized values (`@synthesize("…")`).
 
 ## Identity
 
-- **Repository:** cson (public)
+- **Repository:** caison (public)
 - **Language:** Rust (reference parser) + one implementation per language under `impl/`
-- **Protocol:** library. No CLI or daemon yet — a `cson fmt` / `cson validate` binary is
+- **Protocol:** library. No CLI or daemon yet — a `caison fmt` / `caison validate` binary is
   a candidate, not a commitment.
 - **Spec:** `SPEC.md` is the format and is language-agnostic. `conformance/` is the contract.
 
@@ -21,7 +21,7 @@ implementation in the same commit — parsers must never diverge from the corpus
 
 ## Boundaries
 
-- The **format is public**. Corpora built *with* CSON (e.g. training data) are separate
+- The **format is public**. Corpora built *with* CAISON (e.g. training data) are separate
   and may be private — never vendor corpus data into this repo.
 - `crush-ast/crates/crush-cson` is **crush's own parser for crush**, not a fork of this
   one to reconcile. This repo is the standalone reference.

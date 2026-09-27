@@ -1,4 +1,4 @@
-package cson
+package caison
 
 import (
 	"strconv"
@@ -210,7 +210,7 @@ func (c *cursor) parseKey() (string, bool, *Error) {
 	return key, semantic, nil
 }
 
-// Parse parses a CSON document. On failure it returns an *Error carrying position.
+// Parse parses a CAISON document. On failure it returns an *Error carrying position.
 func Parse(text string) (*Document, error) {
 	c := &cursor{s: text, n: len(text)}
 	root := NewObject()
@@ -245,9 +245,9 @@ func Parse(text string) (*Document, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ann.Name == "cson" {
+			if ann.Name == "caison" || ann.Name == "cson" {
 				// reserved for document metadata (§2.5): sets the version and
-				// does NOT attach to the next node
+				// does NOT attach to the next node. `@cson` is the pre-rename alias.
 				if v, ok := ann.Properties["version"]; ok && v != "" {
 					version = v
 				} else if ann.Args != nil && *ann.Args != "" {

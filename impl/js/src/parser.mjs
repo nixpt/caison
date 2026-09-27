@@ -1,10 +1,10 @@
 /**
- * CSON parser — a direct implementation of SPEC.md §2–§5.
+ * CAISON parser — a direct implementation of SPEC.md §2–§5.
  *
  * Hand-written recursive descent over a character cursor. No dependencies, and
  * nothing platform-specific: this module runs unchanged in Node and a browser.
  */
-import { Annotation, CsonError, Document, Node, Synthesize } from "./model.mjs";
+import { Annotation, CaisonError, Document, Node, Synthesize } from "./model.mjs";
 
 const ESCAPES = { n: "\n", t: "\t", r: "\r", b: "\b", f: "\f", '"': '"', "\\": "\\", "/": "/" };
 
@@ -25,7 +25,7 @@ class Cursor {
 
   err(msg, at = this.i) {
     const [line, col] = this.pos(at);
-    return new CsonError(msg, line, col);
+    return new CaisonError(msg, line, col);
   }
 
   eof() { return this.i >= this.n; }
@@ -269,7 +269,7 @@ function parseKey(c) {
   return [key, semantic];
 }
 
-/** Parse a CSON document. Throws CsonError with position on failure. */
+/** Parse a CAISON document. Throws CaisonError with position on failure. */
 export function parse(text) {
   const c = new Cursor(text);
   const root = new Map();
@@ -298,9 +298,9 @@ export function parse(text) {
 
     if (ch === "@") {
       const ann = parseAnnotation(c);
-      if (ann.name === "cson") {
+      if (ann.name === "caison" || ann.name === "cson") {
         // reserved for document metadata (§2.5): sets the version and does NOT
-        // attach to the next node
+        // attach to the next node. `@cson` is the pre-rename alias.
         version = ann.properties.version || ann.args || version;
       } else {
         pending.push(ann); // attaches to the NEXT node (§4.3)

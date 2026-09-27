@@ -36,3 +36,7 @@
 .jagent/*.sock
 .jagent/cache/
 .jagent/mcp/
+
+# Python bytecode
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
-# cson — JavaScript / TypeScript parser
+# caison — JavaScript / TypeScript parser
 
-A dependency-free implementation of [CSON](../../SPEC.md) for JS and TS. No build
+A dependency-free implementation of [CAISON](../../SPEC.md) for JS and TS. No build
 step, no platform APIs in the parser — it runs unchanged in Node and a browser.
 
 ```js
@@ -35,7 +35,7 @@ loads("a: 1\nb: 1 ~1.0");
 
 ## Errors
 
-Every rejection is a `CsonError` carrying `line` and `col` (SPEC §7):
+Every rejection is a `CaisonError` carrying `line` and `col` (SPEC §7):
 
 ```js
 try { parse("a: 1\na: 2"); }
