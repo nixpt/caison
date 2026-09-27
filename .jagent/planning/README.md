@@ -1,6 +1,6 @@
-# .jagent/planning — cson
+# .jagent/planning — caison
 
-Execution board for cson.
+Execution board for caison.
 
 ## Directory map
 
@@ -27,7 +27,7 @@ planning/
 ## Ticket naming
 
 ```
-CSON-NNN-{slug}.md
+CAISON-NNN-{slug}.md
 ```
 
 Where NNN = sequential number, slug = short name. Start from CSON-1. Never reuse IDs.

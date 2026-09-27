@@ -7,7 +7,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CsonError, loads } from "../src/index.mjs";
+import { CaisonError, loads } from "../src/index.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CORPUS = join(HERE, "..", "..", "..", "conformance");
@@ -22,8 +22,8 @@ function canon(v) {
 const failures = [];
 let ok = 0;
 
-for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".cson")).sort()) {
-  const stem = f.slice(0, -".cson".length);
+for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".caison")).sort()) {
+  const stem = f.slice(0, -".caison".length);
   const expected = JSON.parse(readFileSync(join(CORPUS, "valid", `${stem}.expected.json`), "utf8"));
   let got;
   try {
@@ -37,15 +37,15 @@ for (const f of readdirSync(join(CORPUS, "valid")).filter((f) => f.endsWith(".cs
   } else ok++;
 }
 
-for (const f of readdirSync(join(CORPUS, "invalid")).filter((f) => f.endsWith(".cson")).sort()) {
-  const stem = f.slice(0, -".cson".length);
+for (const f of readdirSync(join(CORPUS, "invalid")).filter((f) => f.endsWith(".caison")).sort()) {
+  const stem = f.slice(0, -".caison".length);
   const needle = readFileSync(join(CORPUS, "invalid", `${stem}.error`), "utf8").trim();
   try {
     loads(readFileSync(join(CORPUS, "invalid", f), "utf8"));
     failures.push(`invalid/${f}: parsed but MUST be rejected (${JSON.stringify(needle)})`);
   } catch (e) {
-    if (!(e instanceof CsonError)) {
-      failures.push(`invalid/${f}: threw ${e.name}, not CsonError: ${e.message}`);
+    if (!(e instanceof CaisonError)) {
+      failures.push(`invalid/${f}: threw ${e.name}, not CaisonError: ${e.message}`);
     } else if (!e.message.toLowerCase().includes(needle.toLowerCase())) {
       failures.push(`invalid/${f}: error ${JSON.stringify(e.message)} lacks ${JSON.stringify(needle)}`);
     } else ok++;

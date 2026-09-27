@@ -5,7 +5,7 @@
  * corpus — notably §4.2's absent-vs-1.0 rule and the node-level metadata that
  * `loads()` callers never see.
  */
-import { CsonError, loads, parse, project, projectValues } from "../src/index.mjs";
+import { CaisonError, loads, parse, project, projectValues } from "../src/index.mjs";
 
 let checks = 0;
 const failures = [];
@@ -21,7 +21,7 @@ function raises(label, text, needle) {
     loads(text);
     failures.push(`${label}: expected rejection`);
   } catch (e) {
-    if (!(e instanceof CsonError)) failures.push(`${label}: threw ${e.name}, not CsonError`);
+    if (!(e instanceof CaisonError)) failures.push(`${label}: threw ${e.name}, not CaisonError`);
     else if (!e.message.toLowerCase().includes(needle.toLowerCase()))
       failures.push(`${label}: error ${JSON.stringify(e.message)} lacks ${JSON.stringify(needle)}`);
   }
@@ -46,9 +46,9 @@ ok("stacked annotations", d.root.get("port").annotations.map((a) => a.name), ["w
 ok("annotation properties", d.root.get("port").annotations[0].properties, { owner: "foreman" });
 ok("pending attaches to next node",
    parse('@pending\nkey: "v"').root.get("key").annotations.map((a) => a.name), ["pending"]);
-ok("annotation args", parse('model: "x" @cson("1.5")').root.get("model").annotations[0].args, "1.5");
-ok("@cson not attached as annotation",
-   parse('@cson { version: "1.0" }\nk: 1').root.get("k").annotations, []);
+ok("annotation args", parse('model: "x" @caison("1.5")').root.get("model").annotations[0].args, "1.5");
+ok("@caison not attached as annotation",
+   parse('@caison { version: "1.0" }\nk: 1').root.get("k").annotations, []);
 
 // --- §4.4 synthesize -------------------------------------------------------
 ok("synthesize projects to object", loads('accent: @synthesize("a colour")'),
@@ -90,8 +90,8 @@ try { parse("a: 1\na: 2"); } catch (e) {
 
 // --- §2.5/§9 version -------------------------------------------------------
 ok("version default", parse("k: 1").version, "1.0");
-ok("version props form", parse('@cson { version: "1.1" }\nk: 1').version, "1.1");
-ok("version args form", parse('@cson("2.0")\nk: 1').version, "2.0");
+ok("version props form", parse('@caison { version: "1.1" }\nk: 1').version, "1.1");
+ok("version args form", parse('@caison("2.0")\nk: 1').version, "2.0");
 
 for (const f of failures) console.log(`  FAIL ${f}`);
 console.log(`\n${checks - failures.length}/${checks} spec checks pass`);

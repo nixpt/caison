@@ -1,9 +1,9 @@
 [package]
-name = "cson"
+name = "caison"
 version = "0.1.0"
 edition = "2021"
-description = "CSON — Crush Semantic Object Notation: an AI-native config/serialization format (confidence, semantic keys, annotations, synthesized values)"
-repository = "https://github.com/nixpt/cson"
+description = "CAISON — Crush AI-native Semantic Object Notation: an AI-native config/serialization format (confidence, semantic keys, annotations, synthesized values)"
+repository = "https://github.com/nixpt/caison"
 license = "MIT OR Apache-2.0"
 
 [dependencies]

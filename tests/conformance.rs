@@ -6,7 +6,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use cson::CsonParser;
+use caison::CaisonParser;
 
 fn conformance_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("conformance")
@@ -17,7 +17,7 @@ fn valid_docs() -> Vec<PathBuf> {
     let mut v: Vec<PathBuf> = fs::read_dir(&dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
         .filter_map(|e| e.ok().map(|e| e.path()))
-        .filter(|p| p.extension().is_some_and(|x| x == "cson"))
+        .filter(|p| p.extension().is_some_and(|x| x == "caison"))
         .collect();
     v.sort();
     v
@@ -28,7 +28,7 @@ fn invalid_docs() -> Vec<PathBuf> {
     let mut v: Vec<PathBuf> = fs::read_dir(&dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
         .filter_map(|e| e.ok().map(|e| e.path()))
-        .filter(|p| p.extension().is_some_and(|x| x == "cson"))
+        .filter(|p| p.extension().is_some_and(|x| x == "caison"))
         .collect();
     v.sort();
     v
@@ -76,8 +76,8 @@ fn canon_value(v: &serde_json::Value) -> String {
     }
 }
 
-/// Project a CSON document to the SPEC §6 JSON shape the corpus expects.
-fn project(doc: &cson::CsonDocument) -> serde_json::Value {
+/// Project a CAISON document to the SPEC §6 JSON shape the corpus expects.
+fn project(doc: &caison::CaisonDocument) -> serde_json::Value {
     // SPEC §6 lives in the library now (src/project.rs), not in this harness, so
     // the corpus tests exactly what callers get.
     doc.project().expect("document projects")
@@ -90,7 +90,7 @@ fn valid_vectors_parse_and_project() {
     let mut failures = Vec::new();
     for path in &docs {
         let src = fs::read_to_string(path).unwrap();
-        let doc = match CsonParser::new(&src).parse() {
+        let doc = match CaisonParser::new(&src).parse() {
             Ok(d) => d,
             Err(e) => {
                 failures.push(format!("{}: parse failed: {e}", path.display()));
@@ -123,7 +123,7 @@ fn invalid_vectors_are_rejected() {
     let mut failures = Vec::new();
     for path in &docs {
         let src = fs::read_to_string(path).unwrap();
-        let err = match CsonParser::new(&src).parse() {
+        let err = match CaisonParser::new(&src).parse() {
             Ok(_) => {
                 failures.push(format!(
                     "{}: expected rejection, but it parsed",

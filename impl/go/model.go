@@ -1,11 +1,11 @@
-// Package cson implements CSON (Crush Semantic Object Notation) — a JSON-shaped
+// Package caison implements CAISON (Crush AI-native Semantic Object Notation) — a JSON-shaped
 // configuration and serialization format with four AI-native primitives:
 // semantic keys, confidence, annotations and synthesized values.
 //
-// Spec: https://github.com/nixpt/cson/blob/main/SPEC.md
+// Spec: https://github.com/nixpt/caison/blob/main/SPEC.md
 //
 // The package has no dependencies outside the standard library.
-package cson
+package caison
 
 import "fmt"
 

@@ -1,19 +1,19 @@
-# cson — Python parser
+# caison — Python parser
 
-A dependency-free Python implementation of [CSON](../../SPEC.md) (Crush Semantic
+A dependency-free Python implementation of [CAISON](../../SPEC.md) (Crush Semantic
 Object Notation): JSON's shape plus four AI-native primitives — semantic keys,
 confidence, annotations, and synthesized values.
 
 ```python
-import cson
+import caison
 
-doc = cson.parse('temperature: 21.5 ~0.8 @source { by: "sensor-3" }')
+doc = caison.parse('temperature: 21.5 ~0.8 @source { by: "sensor-3" }')
 node = doc.root["temperature"]
 node.value          # 21.5
 node.confidence     # 0.8   (None when unstated -- see below)
 node.annotations    # (Annotation(name='source', args=None, properties={'by': 'sensor-3'}),)
 
-cson.loads('tags: ["a", "b"]')          # {'tags': ['a', 'b']}  -- plain JSON data
+caison.loads('tags: ["a", "b"]')          # {'tags': ['a', 'b']}  -- plain JSON data
 ```
 
 ## Two projections, deliberately
@@ -25,7 +25,7 @@ cson.loads('tags: ["a", "b"]')          # {'tags': ['a', 'b']}  -- plain JSON da
 and `"<key>$annotations"` sibling keys:
 
 ```python
-cson.project_full(cson.parse('t: 21.5 ~0.8').root)
+caison.project_full(caison.parse('t: 21.5 ~0.8').root)
 # {'t': 21.5, 't$confidence': 0.8}
 ```
 
@@ -39,7 +39,7 @@ SPEC §4.2 is explicit: an absent confidence means *no claim*, which is not the 
 as claiming certainty. The parser keeps them distinguishable and callers should too:
 
 ```python
-d = cson.parse('a: 1\nb: 1 ~1.0')
+d = caison.parse('a: 1\nb: 1 ~1.0')
 d.root["a"].confidence is None    # True  -- unstated
 d.root["b"].confidence == 1.0     # True  -- explicitly certain
 ```
@@ -49,12 +49,12 @@ whenever the metadata matters.
 
 ## Errors
 
-Every rejection is a `CsonError` carrying `line` and `col` (SPEC §7):
+Every rejection is a `CaisonError` carrying `line` and `col` (SPEC §7):
 
 ```python
 try:
-    cson.parse("a: 1\na: 2")
-except cson.CsonError as e:
+    caison.parse("a: 1\na: 2")
+except caison.CaisonError as e:
     e.message, e.line, e.col      # ("Duplicate key 'a'", 2, 1)
 ```
 
@@ -70,5 +70,5 @@ Both are dependency-free and exit non-zero on failure.
 ## Status
 
 Passes all 13 conformance vectors and 34 spec checks. Validated against a real
-156 MB CSON corpus (content-addressed keys, stacked annotations with args and
+156 MB CAISON corpus (content-addressed keys, stacked annotations with args and
 properties) at ~10 MB/s.

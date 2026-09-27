@@ -1,11 +1,11 @@
 /**
- * TypeScript types for the CSON parser.
- * Spec: https://github.com/nixpt/cson/blob/main/SPEC.md
+ * TypeScript types for the CAISON parser.
+ * Spec: https://github.com/nixpt/caison/blob/main/SPEC.md
  */
 
 /** A parse or projection error, carrying position (SPEC §7). */
-export declare class CsonError extends Error {
-  readonly name: "CsonError";
+export declare class CaisonError extends Error {
+  readonly name: "CaisonError";
   /** The message without the position suffix. */
   readonly reason: string;
   readonly line: number;
@@ -24,8 +24,8 @@ export declare class Synthesize {
   readonly description: string;
 }
 
-/** A CSON value. Objects are `Map`s so key order and metadata survive. */
-export type CsonValue =
+/** A CAISON value. Objects are `Map`s so key order and metadata survive. */
+export type CaisonValue =
   | string | number | boolean | null
   | Synthesize
   | Map<string, Node>
@@ -38,7 +38,7 @@ export type CsonValue =
  * 1.0 — absent means "no claim". Keep them distinguishable.
  */
 export declare class Node {
-  readonly value: CsonValue;
+  readonly value: CaisonValue;
   readonly confidence: number | null;
   readonly annotations: Annotation[];
   /** True when the key was written `~"intent"` (SPEC §4.1). */
@@ -66,7 +66,7 @@ export type Projected =
       }>;
     };
 
-/** Parse a CSON document. Throws {@link CsonError} with position on failure. */
+/** Parse a CAISON document. Throws {@link CaisonError} with position on failure. */
 export declare function parse(text: string): Document;
 
 /** Parse and project to plain JSON-compatible data (SPEC §6). */

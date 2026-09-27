@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import cson  # noqa: E402
+import caison  # noqa: E402
 
 CORPUS = ROOT / "conformance"
 
@@ -21,13 +21,13 @@ def run() -> int:
     failures = []
     n_ok = 0
 
-    for src in sorted((CORPUS / "valid").glob("*.cson")):
+    for src in sorted((CORPUS / "valid").glob("*.caison")):
         expected_path = src.with_suffix("").with_suffix(".expected.json")
         if not expected_path.exists():
             expected_path = src.parent / (src.stem + ".expected.json")
         expected = json.loads(expected_path.read_text())
         try:
-            got = cson.loads(src.read_text())
+            got = caison.loads(src.read_text())
         except Exception as e:  # noqa: BLE001
             failures.append(f"valid/{src.name}: raised {type(e).__name__}: {e}")
             continue
@@ -37,17 +37,17 @@ def run() -> int:
         else:
             n_ok += 1
 
-    for src in sorted((CORPUS / "invalid").glob("*.cson")):
+    for src in sorted((CORPUS / "invalid").glob("*.caison")):
         needle = (src.parent / (src.stem + ".error")).read_text().strip()
         try:
-            cson.loads(src.read_text())
-        except cson.CsonError as e:
+            caison.loads(src.read_text())
+        except caison.CaisonError as e:
             if needle.lower() in str(e).lower():
                 n_ok += 1
             else:
                 failures.append(f"invalid/{src.name}: error {str(e)!r} lacks {needle!r}")
         except Exception as e:  # noqa: BLE001
-            failures.append(f"invalid/{src.name}: raised {type(e).__name__} not CsonError: {e}")
+            failures.append(f"invalid/{src.name}: raised {type(e).__name__} not CaisonError: {e}")
         else:
             failures.append(f"invalid/{src.name}: parsed but MUST be rejected ({needle!r})")
 

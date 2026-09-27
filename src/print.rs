@@ -1,6 +1,6 @@
-//! CSON printer — the inverse of the parser, for SPEC §6's reconstructability claim.
+//! CAISON printer — the inverse of the parser, for SPEC §6's reconstructability claim.
 //!
-//! §6 says a document "can be reconstructed from its projection plus the CSON
+//! §6 says a document "can be reconstructed from its projection plus the CAISON
 //! printer". Nothing verified that until now, because there was no printer.
 //!
 //! **Round-trip is at the NODE level, not the byte level.** The printer preserves
@@ -19,17 +19,17 @@
 
 use std::fmt::Write as _;
 
-use crate::{CsonAnnotation, CsonDocument, CsonNode, CsonValue};
+use crate::{CaisonAnnotation, CaisonDocument, CaisonNode, CaisonValue};
 
-/// Print a document as CSON.
-pub fn print_document(doc: &CsonDocument) -> String {
+/// Print a document as CAISON.
+pub fn print_document(doc: &CaisonDocument) -> String {
     let mut out = String::new();
     // Only emit the version line when it is not the default, so a plain document
     // round-trips to a plain document.
     if doc.version != "1.0" {
-        let _ = writeln!(out, "@cson {{ version: {} }}", quote(&doc.version));
+        let _ = writeln!(out, "@caison {{ version: {} }}", quote(&doc.version));
     }
-    if let CsonValue::Object(map) = &doc.root.value {
+    if let CaisonValue::Object(map) = &doc.root.value {
         // a document's pairs are newline-separated (grammar: document = { pair })
         for (k, v) in map {
             print_pair(&mut out, k, v, 0, "\n");
@@ -39,7 +39,7 @@ pub fn print_document(doc: &CsonDocument) -> String {
 }
 
 /// Print a single node's value (without a key), e.g. for embedding.
-pub fn print_node(node: &CsonNode) -> String {
+pub fn print_node(node: &CaisonNode) -> String {
     let mut out = String::new();
     print_node_into(&mut out, node, 0);
     out
@@ -51,7 +51,7 @@ fn indent(out: &mut String, depth: usize) {
     }
 }
 
-fn print_pair(out: &mut String, key: &str, node: &CsonNode, depth: usize, trailing: &str) {
+fn print_pair(out: &mut String, key: &str, node: &CaisonNode, depth: usize, trailing: &str) {
     indent(out, depth);
     out.push_str(&print_key(key));
     out.push_str(": ");
@@ -59,7 +59,7 @@ fn print_pair(out: &mut String, key: &str, node: &CsonNode, depth: usize, traili
     out.push_str(trailing);
 }
 
-/// Keys are stored with the `~` marker intact for semantic keys (see `CsonKey`),
+/// Keys are stored with the `~` marker intact for semantic keys (see `CaisonKey`),
 /// so the printer can reconstruct the distinction.
 fn print_key(key: &str) -> String {
     if let Some(intent) = key.strip_prefix('~') {
@@ -84,7 +84,7 @@ fn is_safe_bare_key(key: &str) -> bool {
         && !key.starts_with('$')
 }
 
-fn print_node_into(out: &mut String, node: &CsonNode, depth: usize) {
+fn print_node_into(out: &mut String, node: &CaisonNode, depth: usize) {
     print_value(out, &node.value, depth);
     if let Some(c) = node.confidence {
         // SPEC §4.2: emit only when STATED. An absent confidence must never
@@ -97,16 +97,16 @@ fn print_node_into(out: &mut String, node: &CsonNode, depth: usize) {
     }
 }
 
-fn print_value(out: &mut String, value: &CsonValue, depth: usize) {
+fn print_value(out: &mut String, value: &CaisonValue, depth: usize) {
     match value {
-        CsonValue::String(s) => out.push_str(&quote(s)),
-        CsonValue::Number(n) => out.push_str(&number(*n)),
-        CsonValue::Boolean(b) => out.push_str(if *b { "true" } else { "false" }),
-        CsonValue::Null => out.push_str("null"),
-        CsonValue::Synthesize(s) => {
+        CaisonValue::String(s) => out.push_str(&quote(s)),
+        CaisonValue::Number(n) => out.push_str(&number(*n)),
+        CaisonValue::Boolean(b) => out.push_str(if *b { "true" } else { "false" }),
+        CaisonValue::Null => out.push_str("null"),
+        CaisonValue::Synthesize(s) => {
             let _ = write!(out, "@synthesize({})", quote(s));
         }
-        CsonValue::Array(items) => {
+        CaisonValue::Array(items) => {
             if items.is_empty() {
                 out.push_str("[]");
                 return;
@@ -120,7 +120,7 @@ fn print_value(out: &mut String, value: &CsonValue, depth: usize) {
             }
             out.push(']');
         }
-        CsonValue::Object(map) => {
+        CaisonValue::Object(map) => {
             if map.is_empty() {
                 out.push_str("{}");
                 return;
@@ -140,7 +140,7 @@ fn print_value(out: &mut String, value: &CsonValue, depth: usize) {
     }
 }
 
-fn print_annotation(out: &mut String, ann: &CsonAnnotation) {
+fn print_annotation(out: &mut String, ann: &CaisonAnnotation) {
     let _ = write!(out, "@{}", ann.name);
     if let Some(args) = &ann.args {
         let _ = write!(out, "({})", quote(args));
@@ -196,14 +196,14 @@ fn quote(s: &str) -> String {
     out
 }
 
-impl CsonDocument {
-    /// Print this document as CSON. See [`print_document`].
+impl CaisonDocument {
+    /// Print this document as CAISON. See [`print_document`].
     pub fn print(&self) -> String {
         print_document(self)
     }
 }
 
-impl CsonNode {
+impl CaisonNode {
     /// Print this node's value and metadata (no key). See [`print_node`].
     pub fn print(&self) -> String {
         print_node(self)

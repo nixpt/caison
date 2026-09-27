@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ._model import CsonError, Node, Synthesize
+from ._model import CaisonError, Node, Synthesize
 
 RESERVED_PREFIX = "$"
 
@@ -59,7 +59,7 @@ def _obj(d: dict) -> dict:
         # §6 reserves $-prefixed keys so a document key can never collide with
         # the wrapper members.
         if key.startswith(RESERVED_PREFIX):
-            raise CsonError(f"Key {key!r} uses the reserved '$' prefix", 0, 0)
+            raise CaisonError(f"Key {key!r} uses the reserved '$' prefix", 0, 0)
         out[key] = _node(node) if isinstance(node, Node) else _value(node)
     return out
 

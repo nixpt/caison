@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/bump-version.sh — bump the cson version on merge to main.
+# scripts/bump-version.sh — bump the caison version on merge to main.
 # Installed by squadron/bin/bump-version --install (from squadron; edit there
 # and re-run --install to update, not here — this copy will be overwritten).
 #
@@ -17,8 +17,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 DRY_RUN="${BUMPVER_DRY_RUN:-0}"
-GIT_USER="${BUMPVER_GIT_USER:-cson-release}"
-GIT_EMAIL="${BUMPVER_GIT_EMAIL:-release@cson.local}"
+GIT_USER="${BUMPVER_GIT_USER:-caison-release}"
+GIT_EMAIL="${BUMPVER_GIT_EMAIL:-release@caison.local}"
 
 log() { printf 'bump-version: %s\n' "$*" >&2; }
 

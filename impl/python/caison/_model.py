@@ -1,4 +1,4 @@
-"""CSON node model — see SPEC.md §3.
+"""CAISON node model — see SPEC.md §3.
 
 A node is a value plus optional metadata. Unlike JSON, the value and its
 metadata travel together, so the model keeps them on one object.
@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 
-class CsonError(ValueError):
+class CaisonError(ValueError):
     """A parse error, with position. SPEC §7 requires positional messages."""
 
     def __init__(self, message: str, line: int, col: int):

@@ -1,27 +1,29 @@
-# CSON — specification
+# CAISON — specification
 
-**Crush Semantic Object Notation** — a human-readable configuration and
+**Crush AI-native Semantic Object Notation** — a human-readable configuration and
 serialization format that blends JSON structure with AI-native primitives:
 confidence weights, semantic keys, annotations, and synthesized values.
 
-- **Format version:** `1.0` (the `@cson { version: "1.0" }` default)
+- **Format version:** `1.0` (the `@caison { version: "1.0" }` default)
 - **Status:** draft — grammar stable, conformance corpus growing
 - **License:** spec + reference implementation MIT OR Apache-2.0
+- **File extension:** `.caison` (formerly CSON / `.cson`; renamed 2026-09-27 to avoid
+  CoffeeScript Object Notation, which owns the `cson` name and `.cson` extension)
 
 This document is **language-agnostic**. It defines the format; a *parser* is an
 implementation of it. The Rust reference parser lives in this repository
-(`src/`); other languages are expected to ship their own (`cson-py`, …).
+(`src/`); other languages are expected to ship their own (`caison-py`, …).
 
 ---
 
 ## 1. Design goals
 
-1. **JSON-compatible shape, AI-native values.** A CSON document is an object of
+1. **JSON-compatible shape, AI-native values.** A CAISON document is an object of
    key/value nodes, like JSON — plus four primitives JSON lacks.
 2. **Human-editable.** Comments, optional trailing commas, bare keys, and
    whitespace-insensitive structure.
-3. **Lossless to JSON.** Every CSON node has a defined JSON projection
-   (§6), so a CSON document can be consumed by any JSON tooling.
+3. **Lossless to JSON.** Every CAISON node has a defined JSON projection
+   (§6), so a CAISON document can be consumed by any JSON tooling.
 4. **Confidence is first-class.** A value may carry a probability, because an
    agent-generated document should be able to say *how sure it is*.
 
@@ -82,7 +84,7 @@ are sugar for nesting — `[a]` + `x: 1` ⇔ `a: { x: 1 }`.
 
 ### 2.5 Document version
 
-`@cson { version: "1.0" }` (or `@cson("1.0")`) sets the document's version.
+`@caison { version: "1.0" }` (or `@caison("1.0")`) sets the document's version.
 Absent, the version is `1.0`.
 
 ---
@@ -114,7 +116,7 @@ together. A parser produces a tree of nodes rooted in a document object.
 
 ### 4.1 Semantic keys
 
-```cson
+```caison
 ~"billing or refund issues": "route to support"
 ```
 
@@ -124,7 +126,7 @@ index) uses the text. An exact-match consumer treats the text as the key.
 
 ### 4.2 Confidence
 
-```cson
+```caison
 temperature: 21.5 ~0.8
 ```
 
@@ -135,22 +137,22 @@ distinction between absent and `1.0`.
 
 ### 4.3 Annotations
 
-```cson
+```caison
 port: 8080 @wip { owner: "foreman" }
 host: "localhost" @temporary
-model: "x" @cson("1.5")        # args form
+model: "x" @caison("1.5")        # args form
 ```
 
 An annotation has a name, optional parenthesized **args** (a raw string), and
 optional `{ key: value }` **properties** (string values). Multiple annotations
-may stack. `@cson` is reserved for document metadata (§2.5).
+may stack. `@caison` is reserved for document metadata (§2.5).
 
 Annotations attach to the **next node** in a document (a pending annotation is
 applied to the following key/value pair), or to a value inline.
 
 ### 4.4 Synthesized values
 
-```cson
+```caison
 accent: @synthesize("a complimentary color to #3366cc")
 ```
 
@@ -189,7 +191,7 @@ Comments (`# … EOL`) may appear anywhere whitespace is allowed.
 
 ## 6. JSON projection
 
-Every CSON document maps to JSON so existing tooling can consume it.
+Every CAISON document maps to JSON so existing tooling can consume it.
 
 **The rule is one sentence:** a node with no metadata projects to its bare value;
 a node carrying confidence or annotations projects to a **wrapper object**.
@@ -204,9 +206,9 @@ a node carrying confidence or annotations projects to a **wrapper object**.
 - **Semantic key** → the key's text, verbatim (the `~` is syntax, not data).
 - **Synthesized value** → `{ "$synthesize": "the description" }`.
 - **Keys beginning with `$` are reserved** at the top level of a projected object.
-  A CSON document must not use them as bare keys; a parser projecting one is an error.
+  A CAISON document must not use them as bare keys; a parser projecting one is an error.
 
-```cson
+```caison
 name: "avalanche"                  # no metadata
 temperature: 21.5 ~0.8
 tags: [1 ~0.5, 2]
@@ -231,7 +233,7 @@ a node (§5) and may carry metadata like any other.
 The projection is **lossless in meaning**: `$confidence` is present only when
 stated, so an absent confidence and an explicit `~1.0` remain distinguishable in
 the projection, as §4.2 requires. A document can therefore be reconstructed from
-its projection plus the CSON printer (syntax — comments, section sugar, key order
+its projection plus the CAISON printer (syntax — comments, section sugar, key order
 — is not preserved).
 
 > **Why a wrapper and not sibling keys.** An earlier draft specified
@@ -269,7 +271,7 @@ corpus.
 
 ## 9. Versioning
 
-The format version is the string in `@cson { version: … }`. `1.0` is the current
+The format version is the string in `@caison { version: … }`. `1.0` is the current
 draft. A change that alters the meaning of an existing document is a breaking
 change and requires a new major version; additive primitives may bump the minor
 version. A parser must surface the document's declared version to its caller.

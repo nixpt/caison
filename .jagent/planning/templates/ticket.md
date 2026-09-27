@@ -1,8 +1,8 @@
-# CSON-NNN — {{title}}
+# CAISON-NNN — {{title}}
 
 | Field | Value |
 |-------|-------|
-| **ID** | CSON-NNN |
+| **ID** | CAISON-NNN |
 | **Priority** | P1 / P2 / P3 / P4 / P5 |
 | **Status** | Backlog / In Progress / Done |
 | **Phase** | {{milestone}} |

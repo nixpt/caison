@@ -10,7 +10,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use cson::CsonParser;
+use caison::CaisonParser;
 
 fn corpus_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("conformance")
@@ -20,7 +20,7 @@ fn valid_docs() -> Vec<PathBuf> {
     let mut v: Vec<PathBuf> = fs::read_dir(corpus_dir().join("valid"))
         .expect("read valid/")
         .filter_map(|e| e.ok().map(|e| e.path()))
-        .filter(|p| p.extension().is_some_and(|x| x == "cson"))
+        .filter(|p| p.extension().is_some_and(|x| x == "caison"))
         .collect();
     v.sort();
     v
@@ -31,7 +31,7 @@ fn print_then_parse_preserves_meaning() {
     let mut failures = Vec::new();
     for path in valid_docs() {
         let src = fs::read_to_string(&path).expect("read vector");
-        let doc = match CsonParser::new(&src).parse() {
+        let doc = match CaisonParser::new(&src).parse() {
             Ok(d) => d,
             Err(e) => {
                 failures.push(format!("{}: original failed to parse: {e}", path.display()));
@@ -39,7 +39,7 @@ fn print_then_parse_preserves_meaning() {
             }
         };
         let printed = doc.print();
-        let reparsed = match CsonParser::new(&printed).parse() {
+        let reparsed = match CaisonParser::new(&printed).parse() {
             Ok(d) => d,
             Err(e) => {
                 failures.push(format!(
@@ -66,33 +66,45 @@ fn print_then_parse_preserves_meaning() {
             ));
         }
     }
-    assert!(failures.is_empty(), "round-trip failures:\n{}", failures.join("\n"));
+    assert!(
+        failures.is_empty(),
+        "round-trip failures:\n{}",
+        failures.join("\n")
+    );
 }
 
 /// SPEC §4.2: an absent confidence must not acquire one by being printed.
 #[test]
 fn printing_does_not_invent_confidence() {
-    let doc = CsonParser::new("a: 1\nb: 1 ~1.0").parse().expect("parse");
+    let doc = CaisonParser::new("a: 1\nb: 1 ~1.0").parse().expect("parse");
     let printed = doc.print();
     assert!(
         !printed.contains("a: 1 ~"),
         "absent confidence must not be printed as ~1.0; got:\n{printed}"
     );
-    let reparsed = CsonParser::new(&printed).parse().expect("re-parse");
+    let reparsed = CaisonParser::new(&printed).parse().expect("re-parse");
     let root = match &reparsed.root.value {
-        cson::CsonValue::Object(m) => m,
+        caison::CaisonValue::Object(m) => m,
         _ => panic!("root is not an object"),
     };
-    assert!(root["a"].confidence.is_none(), "absent confidence became {:?}", root["a"].confidence);
+    assert!(
+        root["a"].confidence.is_none(),
+        "absent confidence became {:?}",
+        root["a"].confidence
+    );
     assert_eq!(root["b"].confidence, Some(1.0), "explicit ~1.0 was lost");
 }
 
 /// A key that cannot be written bare must be quoted, not emitted raw.
 #[test]
 fn unsafe_keys_are_quoted() {
-    let doc = CsonParser::new("\"two words\": 1\n\"has:colon\": 2").parse().expect("parse");
+    let doc = CaisonParser::new("\"two words\": 1\n\"has:colon\": 2")
+        .parse()
+        .expect("parse");
     let printed = doc.print();
-    let reparsed = CsonParser::new(&printed).parse().expect("re-parse printed keys");
+    let reparsed = CaisonParser::new(&printed)
+        .parse()
+        .expect("re-parse printed keys");
     assert_eq!(
         doc.project().unwrap(),
         reparsed.project().unwrap(),
@@ -107,9 +119,9 @@ fn metadata_survives_round_trip() {
 accent: @synthesize("a colour")
 nested: { x: [1 ~0.5, 2], y: "z" @note }
 "#;
-    let doc = CsonParser::new(src).parse().expect("parse");
+    let doc = CaisonParser::new(src).parse().expect("parse");
     let printed = doc.print();
-    let reparsed = CsonParser::new(&printed).parse().expect("re-parse");
+    let reparsed = CaisonParser::new(&printed).parse().expect("re-parse");
     assert_eq!(
         doc.project().unwrap(),
         reparsed.project().unwrap(),
@@ -117,7 +129,7 @@ nested: { x: [1 ~0.5, 2], y: "z" @note }
     );
 }
 
-/// The printer must emit STRICTLY valid CSON, not merely something our own
+/// The printer must emit STRICTLY valid CAISON, not merely something our own
 /// parsers accept.
 ///
 /// Regression: nested-object pairs were once printed newline-separated with no
@@ -128,7 +140,9 @@ nested: { x: [1 ~0.5, 2], y: "z" @note }
 /// about; this asserts the syntax directly.
 #[test]
 fn nested_object_pairs_are_comma_separated() {
-    let doc = CsonParser::new("a: { x: 1, y: 2, z: 3 }").parse().expect("parse");
+    let doc = CaisonParser::new("a: { x: 1, y: 2, z: 3 }")
+        .parse()
+        .expect("parse");
     let printed = doc.print();
     let commas = printed.matches(",\n").count();
     assert_eq!(
@@ -144,7 +158,7 @@ fn nested_object_pairs_are_comma_separated() {
 /// Top-level pairs are newline-separated (`document = { pair }`), NOT comma-separated.
 #[test]
 fn document_pairs_are_not_comma_separated() {
-    let doc = CsonParser::new("a: 1\nb: 2").parse().expect("parse");
+    let doc = CaisonParser::new("a: 1\nb: 2").parse().expect("parse");
     let printed = doc.print();
     assert!(
         !printed.contains(",\n"),

@@ -1,15 +1,15 @@
 /**
- * CSON node model — see SPEC.md §3.
+ * CAISON node model — see SPEC.md §3.
  *
  * A node is a value plus optional metadata. Unlike JSON, the value and its
  * metadata travel together, so the model keeps them on one object.
  */
 
 /** A parse or projection error, with position. SPEC §7 requires positional messages. */
-export class CsonError extends Error {
+export class CaisonError extends Error {
   constructor(message, line, col) {
     super(`${message} (line ${line}, column ${col})`);
-    this.name = "CsonError";
+    this.name = "CaisonError";
     this.reason = message;
     this.line = line;
     this.col = col;
