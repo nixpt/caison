@@ -392,13 +392,18 @@ impl<'a> CaisonParser<'a> {
                     self.pos += 1;
                     break;
                 }
-                if let Some((k, v)) = self.parse_kv_pair()? {
-                    let k_str = k.to_string();
-                    if map.contains_key(&k_str) {
-                        return Err(self.error(&format!("Duplicate key: {}", k_str)));
-                    }
-                    map.insert(k_str, v);
+                // `parse_kv_pair` returns `None` without consuming input at
+                // `[`, `]` and `@` (and `}`/EOF, handled above). Inside an
+                // object that is a malformed key position, not "nothing to
+                // do": erroring here is what guarantees the loop advances.
+                let Some((k, v)) = self.parse_kv_pair()? else {
+                    return Err(self.error("Expected key or '}'"));
+                };
+                let k_str = k.to_string();
+                if map.contains_key(&k_str) {
+                    return Err(self.error(&format!("Duplicate key: {}", k_str)));
                 }
+                map.insert(k_str, v);
                 self.skip_whitespace_and_comments();
                 if self.pos < self.input.len() && self.input[self.pos..].starts_with(',') {
                     self.pos += 1;
@@ -417,7 +422,13 @@ impl<'a> CaisonParser<'a> {
                     self.pos += 1;
                     break;
                 }
+                let elem_start = self.pos;
                 let (v, c) = self.parse_value()?;
+                // A bare value at `}` (or similar) matches the empty token and
+                // consumes nothing; without this guard the loop never advances.
+                if self.pos == elem_start {
+                    return Err(self.error("Expected value or ']'"));
+                }
                 let anns = self.parse_trailing_annotations()?;
                 arr.push(CaisonNode {
                     value: v,
