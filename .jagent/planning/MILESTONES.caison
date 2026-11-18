@@ -1,0 +1,62 @@
+@caison { version: "1.0" }
+
+schema: "milestones/1"
+
+project: {
+  name: "caison"
+  kind: "repo"
+  lifecycle: "shipped" @verified { at: "2026-11-18", by: "altair" }
+  lifecycle_since: "2026-09-27"
+  home: "zorro"
+  ticket_prefix: "CSON"
+  summary: "CAISON (formerly CSON): the AI-native object notation and its reference parsers (Rust, Python, JS, Go) with a cross-implementation conformance job; caison 0.1.0 on crates.io, v0.1.1 tagged 2026-11-17 (parser hang fix) but not yet published; three parser-correctness issues open (#6-#8)"
+  north_star: "one notation the whole fleet reads the same way in every language"
+  stewards: ["altair"]
+  evidence: {
+    default_branch: "main"
+    registries: [{ registry: "crates.io", name: "caison" }]
+  }
+}
+
+milestones: [
+  {
+    id: "v0.1"
+    title: "extraction from crush-ast"
+    status: "done" @verified { at: "2026-11-18", by: "altair" }
+    done_at: "2026-09-19"
+    done_when: ["parser extracted from crush-ast/crush-cson (TASKS.md, ticked)"]
+  },
+  {
+    id: "v0.2"
+    title: "the spec is settled and travels"
+    status: "done" @verified { at: "2026-11-18", by: "altair" }
+    done_at: "2026-09-20"
+    tickets: ["CSON-1", "CSON-5", "CSON-6", "CSON-7", "CSON-8", "CSON-9", "CSON-10"]
+    done_when: [
+      { claim: "spec §6 projection settled (PR #2)", check: { kind: "merged", pr: "2" } },
+      { claim: "conformance job runs every implementation", check: { kind: "file", path: ".github/workflows/conformance.yml" } },
+    ]
+  },
+  {
+    id: "publish"
+    title: "on crates.io, crush-ast re-pointed"
+    status: "active" ~0.7 @verified { at: "2026-11-18", by: "altair" }
+    tickets: ["CSON-3", "CSON-4"]
+    done_when: [
+      { claim: "caison on crates.io", check: { kind: "published", registry: "crates.io", name: "caison" } },
+      { claim: "v0.1.1 published", check: { kind: "published", registry: "crates.io", name: "caison", version: "0.1.1" } },
+      "crush-ast's dependents use caison (crush-ast's workspace declares caison 0.1.0; whether crush-caison is a thin wrapper was not checked)",
+    ]
+    notes: "rename to CAISON in PR #3, crates.io prep in PR #4; TASKS.md still shows CSON-3/CSON-4 unticked"
+  },
+  {
+    id: "v0.3"
+    title: "parser correctness and printers everywhere"
+    status: "next" @verified { at: "2026-11-18", by: "altair" }
+    tickets: ["CSON-2", "CSON-11"]
+    done_when: [
+      "issues #6 (torn event + append), #7 (Rust key order, also milestones/1's array rule), #8 (stray top-level braces) fixed",
+      "CSON-2 full conformance vector set; CSON-11 printers for Python, JS and Go",
+    ]
+  },
+]
